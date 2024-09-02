@@ -6,11 +6,8 @@ function concatFiles(...args){
     let cb = args[args.length - 1];
 
     for(let path of args){
-        getTextFromFile(path, (data)=>{
-            return data
-        })
+        getTextFromFile(path, cb())
     }
-
 }
 
 function getTextFromFile(path, cb){
@@ -21,5 +18,6 @@ function getTextFromFile(path, cb){
         }
         cb(data);
     });
-
 }
+
+concatFiles('./files/foo.txt', './files/bar.txt', './files/result.txt', (data)=>console.log(data));
