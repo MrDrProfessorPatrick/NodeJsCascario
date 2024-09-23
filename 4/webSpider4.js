@@ -21,7 +21,6 @@ export class TaskQueue {
   }
 }
 
-
 function spiderTask (url, nesting, queue, cb) {
     const filename = urlToFilename(url)
         fs.readFile(filename, 'utf8', (err, fileContent) => {

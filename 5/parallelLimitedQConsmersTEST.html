@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Моя тестовая страница</title>
+  </head>
+  <body>
+    <img src="images/firefox-icon.png" alt="Моё тестовое изображение" />
+
+    <script>
+let task1 = function(){
+  console.log('task1 is running')
+    return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+          console.log('task1');
+            resolve('task1')
+            return 'task1 returned'
+      }, 1000);
+
+    })
+  }
+      
+    let task2 = function(){
+      console.log('task1 is running')
+        return new Promise((resolve, reject)=>{
+            setTimeout(()=>{
+              console.log('task2');
+                resolve('task2')
+                return 'task2 returned'
+          }, 1000);
+    
+        })
+      }
+      
+    let task3 = function(){
+    console.log('task3 is running')
+      return new Promise((resolve, reject)=>{
+          setTimeout(()=>{
+            console.log('task3');
+              resolve('task3')
+              return 'task3 returned'
+        }, 3000);
+
+      })
+    }
+    
+      let task4 = function(){
+        console.log('task4 is running')
+          return new Promise((resolve, reject)=>{
+              setTimeout(()=>{
+                console.log('task4');
+                  resolve('task4')
+                  return 'task4 returned'
+            }, 3000);
+      
+          })
+        }
+    
+      let task5 = function(){
+        console.log('task5 is running')
+          return new Promise((resolve, reject)=>{
+              setTimeout(()=>{
+                console.log('task5');
+                  resolve('task5')
+                  return 'task5 returned'
+            }, 3000);
+      
+          })
+        }
+    
+    
+      let task6 = function(){
+        console.log('task6 is running')
+          return new Promise((resolve, reject)=>{
+              setTimeout(()=>{
+                console.log('task6');
+                  resolve('task6')
+                  return 'task6 returned'
+            }, 3000);
+      
+          })
+        }
+
+
+
+
+
+ class TaskQueuePC {
+    constructor (concurrency) {
+        this.taskQueue = []
+        this.consumerQueue = []
+        // spawn consumers
+        for (let i = 0; i < concurrency; i++) {
+            this.consumer()
+        }
+    }
+
+    async consumer () {
+        while (true) {
+            try {
+                const task = await this.getNextTask()
+                await task()
+            } catch (err) {
+                console.error(err)
+                }
+            }
+    }
+
+    async getNextTask () {
+        return new Promise((resolve) => {
+            if (this.taskQueue.length !== 0) {
+                return resolve(this.taskQueue.shift())
+            }
+            console.log('resolve', resolve)
+        this.consumerQueue.push(resolve)
+        })
+    }
+
+    runTask (task) {
+        return new Promise((resolve, reject) => {
+            const taskWrapper = () => {
+                const taskPromise = task()
+                taskPromise.then(resolve, reject)
+                return taskPromise
+              }
+
+            if (this.consumerQueue.length !== 0) {
+                const consumer = this.consumerQueue.shift();
+                consumer(taskWrapper);
+            } else {
+                this.taskQueue.push(taskWrapper)
+            }
+        })
+    }
+}
+// NEED TO ADD TASKS
+let tasks = [task1, task2, task3, task4, task5];
+
+let taskQueue = new TaskQueuePC(3);
+
+console.log('consumerQ', taskQueue.consumerQueue);
+
+for(let task of tasks){
+    taskQueue.runTask(task);
+}
+
+
+
+    </script>
+  </body>
+</html>

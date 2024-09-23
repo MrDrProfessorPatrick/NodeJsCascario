@@ -1,23 +1,43 @@
-import {readFile} from 'fs';
+import {readFile, writeFile} from 'fs';
+
+let textAccumulator = '';
 
 function concatFiles(...args){
-    let textAccumulator = '';
+    let pathes = args.slice(0, args.length-2);
     let destinationFilePath = args[args.length-2];
     let cb = args[args.length - 1];
+console.log('cb in concatFiles', cb)
+    iterateFiles(pathes, 0, cb.bind(null,destinationFilePath));
+}
 
-    for(let path of args){
-        getTextFromFile(path, cb())
-    }
+function iterateFiles(pathes, idx, finalCb){
+    if(idx >= pathes.length) {
+        finalCb()
+        return;
+    };
+    let currentPath = pathes[idx];
+    getTextFromFile(currentPath, iterateFiles.bind(null, pathes, idx+1, finalCb));
 }
 
 function getTextFromFile(path, cb){
+    console.log('cb', cb)
     readFile(path, (error, data)=>{
         if(error){
-            console.error(error);
+            console.error('ERROR', error);
             return;
         }
-        cb(data);
+        textAccumulator+=data
+        cb()
     });
 }
 
-concatFiles('./files/foo.txt', './files/bar.txt', './files/result.txt', (data)=>console.log(data));
+concatFiles('./files/bar.txt', './files/foo.txt', './files/result.txt', (resultFile)=>{
+
+    writeFile(resultFile, textAccumulator, (error)=>{
+
+        if(error){
+            console.log('Error catched', error)
+        }
+        console.log('WRITED')
+    })
+});

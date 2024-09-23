@@ -25,8 +25,7 @@ function createFileReader (filename) {
         })
 
     return {
-        // push listener cb of .onDataReady to listeners array before if inconsistentRead asynchronous
-        // or after if inconsistentRead synchronous
+        // push listener cb of .onDataReady to listeners array before inconsistentRead launch it, as cb is called asynchronous in readFile
         // and thath's why it works if asynchronous and doesn't work if synchronous
         onDataReady: listener => listeners.push(listener)
     }
